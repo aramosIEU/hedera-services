@@ -18,6 +18,7 @@ package com.swirlds.common.metrics.platform;
 
 import static com.swirlds.common.threading.manager.AdHocThreadManager.getStaticThreadManager;
 import static com.swirlds.logging.legacy.LogMarker.EXCEPTION;
+import static com.swirlds.logging.legacy.LogMarker.STARTUP;
 
 import com.sun.net.httpserver.HttpServer;
 import com.swirlds.base.state.Lifecycle;
@@ -69,7 +70,7 @@ public class DefaultMetricsProvider implements PlatformMetricsProvider, Lifecycl
      */
     public DefaultMetricsProvider(@NonNull final Configuration configuration) {
         this.configuration = Objects.requireNonNull(configuration, "configuration is null");
-        logger.info("Running DefaultMetricsProvider class");
+        logger.info(STARTUP.getMarker(), "Running DefaultMetricsProvider class");
         metricsConfig = configuration.getConfigData(MetricsConfig.class);
         final PrometheusConfig prometheusConfig = configuration.getConfigData(PrometheusConfig.class);
         factory = new DefaultMetricsFactory(metricsConfig);
