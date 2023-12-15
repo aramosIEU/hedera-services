@@ -82,7 +82,9 @@ public class DefaultMetricsProvider implements PlatformMetricsProvider, Lifecycl
 
         // setup Prometheus endpoint
         PrometheusEndpoint endpoint = null;
+        logger.info(STARTUP.getMarker(), "About to set prometheus endpoint");
         if (!metricsConfig.disableMetricsOutput() && prometheusConfig.endpointEnabled()) {
+            logger.info(STARTUP.getMarker(), "Setting prometheus endpoint");
             final InetSocketAddress address = new InetSocketAddress(prometheusConfig.endpointPortNumber());
             try {
                 final HttpServer httpServer = HttpServer.create(address, prometheusConfig.endpointMaxBacklogAllowed());
