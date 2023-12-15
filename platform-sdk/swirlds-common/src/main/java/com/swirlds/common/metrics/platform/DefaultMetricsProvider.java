@@ -69,7 +69,7 @@ public class DefaultMetricsProvider implements PlatformMetricsProvider, Lifecycl
      */
     public DefaultMetricsProvider(@NonNull final Configuration configuration) {
         this.configuration = Objects.requireNonNull(configuration, "configuration is null");
-
+        logger.info("Running DefaultMetricsProvider class");
         metricsConfig = configuration.getConfigData(MetricsConfig.class);
         final PrometheusConfig prometheusConfig = configuration.getConfigData(PrometheusConfig.class);
         factory = new DefaultMetricsFactory(metricsConfig);
