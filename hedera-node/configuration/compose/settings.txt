@@ -23,7 +23,7 @@ event.creation.maxCreationRate,                20
                                           #          Metrics          #
                                           #############################
 
-prometheus.endpointEnabled,                    false                        # differs from mainnet
+prometheus.endpointEnabled,                    true                        # differs from mainnet
 
                                           #############################
                                           #           Misc            #
