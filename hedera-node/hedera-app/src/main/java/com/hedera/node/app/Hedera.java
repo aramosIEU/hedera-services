@@ -82,8 +82,10 @@ import com.swirlds.common.constructable.ClassConstructorPair;
 import com.swirlds.common.constructable.ConstructableRegistry;
 import com.swirlds.common.constructable.ConstructableRegistryException;
 import com.swirlds.common.crypto.CryptographyHolder;
+import com.swirlds.common.metrics.Metrics;
 import com.swirlds.common.platform.NodeId;
 import com.swirlds.platform.listeners.PlatformStatusChangeListener;
+import com.swirlds.platform.stats.StatConstructor;
 import com.swirlds.platform.system.InitTrigger;
 import com.swirlds.platform.system.Platform;
 import com.swirlds.platform.system.Round;
@@ -92,6 +94,7 @@ import com.swirlds.platform.system.SwirldDualState;
 import com.swirlds.platform.system.SwirldMain;
 import com.swirlds.platform.system.SwirldState;
 import com.swirlds.platform.system.events.Event;
+import com.swirlds.platform.system.status.GrpcStatus;
 import com.swirlds.platform.system.status.PlatformStatus;
 import com.swirlds.platform.system.transaction.Transaction;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -276,6 +279,12 @@ public final class Hedera implements SwirldMain {
                         new CongestionThrottleService())
                 .forEach(service -> servicesRegistry.register(service, version));
 
+        platform.getContext().getMetrics().getOrCreate(StatConstructor.createEnumStat(
+                "GrpcStatus",
+                Metrics.PLATFORM_CATEGORY,
+                GrpcStatus.values(),
+                this::getGrpcStatus));
+
         // Register MerkleHederaState with the ConstructableRegistry, so we can use a constructor OTHER THAN the default
         // constructor to make sure it has the config and other info it needs to be created correctly.
         try {
@@ -287,6 +296,8 @@ public final class Hedera implements SwirldMain {
             throw new RuntimeException(e);
         }
     }
+
+    private GrpcStatus getGrpcStatus (){ return isActive() == true ? GrpcStatus.UP : GrpcStatus.DOWN;}
 
     /**
      * Gets the port the gRPC server is listening on, or {@code -1} if there is no server listening.
