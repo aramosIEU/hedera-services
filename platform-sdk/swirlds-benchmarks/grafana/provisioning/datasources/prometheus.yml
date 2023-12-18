@@ -1,0 +1,9 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://localhost:9999
+    jsonData:
+      timeInterval: "5s"  # Optional: Adjust the time interval as needed
