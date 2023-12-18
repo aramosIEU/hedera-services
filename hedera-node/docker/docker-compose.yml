@@ -10,6 +10,7 @@ services:
       - "./compose-network/node0/saved:/opt/hedera/services/data/saved"
       - "./compose-network/node0/output:/opt/hedera/services/output"
     ports:
+      - 9999:9999
       - 50211:50211
   node_1:
     container_name: node_1
