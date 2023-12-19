@@ -178,6 +178,7 @@ import com.swirlds.platform.system.address.Address;
 import com.swirlds.platform.system.address.AddressBook;
 import com.swirlds.platform.system.address.AddressBookUtils;
 import com.swirlds.platform.system.events.EventDescriptor;
+import com.swirlds.platform.system.status.GrpcStatus;
 import com.swirlds.platform.system.status.PlatformStatus;
 import com.swirlds.platform.system.status.PlatformStatusManager;
 import com.swirlds.platform.system.status.actions.DoneReplayingEventsAction;
@@ -429,6 +430,12 @@ public class SwirldsPlatform implements Platform {
                 Metrics.PLATFORM_CATEGORY,
                 PlatformStatus.values(),
                 platformStatusManager::getCurrentStatus));
+
+        metrics.getOrCreate(StatConstructor.createEnumStat(
+                "GrpcStatus",
+                Metrics.PLATFORM_CATEGORY,
+                GrpcStatus.values(),
+                this::getGrpcStatus));
 
         registerAddressBookMetrics(metrics, currentAddressBook, selfId);
 
@@ -1442,5 +1449,11 @@ public class SwirldsPlatform implements Platform {
                 throwable);
 
         SystemExitUtils.exitSystem(exitCode, msg);
+    }
+
+    private GrpcStatus getGrpcStatus(){ return isActive() == true ? GrpcStatus.UP : GrpcStatus.DOWN;}
+
+    private boolean isActive(){
+        return platformStatusManager.getCurrentStatus() == PlatformStatus.ACTIVE;
     }
 }
