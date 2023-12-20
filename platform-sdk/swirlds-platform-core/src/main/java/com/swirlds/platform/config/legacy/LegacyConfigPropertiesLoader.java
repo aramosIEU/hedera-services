@@ -17,6 +17,7 @@
 package com.swirlds.platform.config.legacy;
 
 import static com.swirlds.logging.legacy.LogMarker.EXCEPTION;
+import static com.swirlds.logging.legacy.LogMarker.STARTUP;
 
 import com.swirlds.common.platform.NodeId;
 import com.swirlds.common.utility.CommonUtils;
@@ -109,6 +110,7 @@ public final class LegacyConfigPropertiesLoader {
                             final String[] appParams = Arrays.copyOfRange(lineParameters, 2, lineParameters.length);
                             final JarAppConfig appConfig = new JarAppConfig(lineParameters[1], appParams);
                             configurationProperties.setAppConfig(appConfig);
+                            logger.info(STARTUP.getMarker(), "JarAppConfig:" + appConfig.jarName()  + ", " + appConfig.params());
                         }
                         case ADDRESS_PROPERTY_NAME -> {
                             try {
