@@ -16,6 +16,7 @@
 
 package com.swirlds.platform;
 
+import static com.swirlds.logging.legacy.LogMarker.CONFIG;
 import static com.swirlds.logging.legacy.LogMarker.EXCEPTION;
 
 import com.swirlds.common.config.singleton.ConfigurationHolder;
@@ -79,6 +80,11 @@ public final class ApplicationDefinitionLoader {
                 .appConfig()
                 .map(ApplicationDefinitionLoader::convertToStartParams)
                 .orElseThrow(() -> new ConfigurationException("application config is missing"));
+
+        logger.info(CONFIG.getMarker(), "AppStartParams:" +
+                appStartParams.appJarPath().toString() + ", " +
+                appStartParams.mainClassname() + ", " +
+                appStartParams.appParameters());
 
         return new ApplicationDefinition(
                 swirldName,
