@@ -16,9 +16,6 @@
 
 package com.swirlds.platform;
 
-import static com.swirlds.logging.legacy.LogMarker.CONFIG;
-import static com.swirlds.logging.legacy.LogMarker.EXCEPTION;
-
 import com.swirlds.common.config.singleton.ConfigurationHolder;
 import com.swirlds.common.utility.CommonUtils;
 import com.swirlds.platform.config.PathsConfig;
@@ -35,6 +32,8 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static com.swirlds.logging.legacy.LogMarker.*;
 
 /**
  * This class only contains one method that was extracted from the {@link Browser} class.
@@ -81,7 +80,7 @@ public final class ApplicationDefinitionLoader {
                 .map(ApplicationDefinitionLoader::convertToStartParams)
                 .orElseThrow(() -> new ConfigurationException("application config is missing"));
 
-        logger.info(CONFIG.getMarker(), "AppStartParams:" +
+        logger.info(STARTUP.getMarker(), "AppStartParams:" +
                 appStartParams.appJarPath().toString() + ", " +
                 appStartParams.mainClassname() + ", " +
                 appStartParams.appParameters());
