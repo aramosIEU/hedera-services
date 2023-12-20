@@ -83,7 +83,7 @@ public final class ApplicationDefinitionLoader {
         logger.info(STARTUP.getMarker(), "AppStartParams:" +
                 appStartParams.appJarPath().toString() + ", " +
                 appStartParams.mainClassname() + ", " +
-                appStartParams.appParameters());
+                appStartParams.appParameters().toString());
 
         return new ApplicationDefinition(
                 swirldName,

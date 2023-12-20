@@ -110,7 +110,6 @@ public final class LegacyConfigPropertiesLoader {
                             final String[] appParams = Arrays.copyOfRange(lineParameters, 2, lineParameters.length);
                             final JarAppConfig appConfig = new JarAppConfig(lineParameters[1], appParams);
                             configurationProperties.setAppConfig(appConfig);
-                            logger.info(STARTUP.getMarker(), "JarAppConfig:" + appConfig.jarName()  + ", " + appConfig.params());
                         }
                         case ADDRESS_PROPERTY_NAME -> {
                             try {
