@@ -80,6 +80,7 @@ public class MonoServicesMain implements SwirldMain {
     @Override
     public void run() {
         /* No-op. */
+        log.info("Running monoservicesmain");
     }
 
     private void initApp() {
