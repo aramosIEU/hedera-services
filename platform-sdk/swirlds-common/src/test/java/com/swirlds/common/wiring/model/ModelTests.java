@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Hedera Hashgraph, LLC
+ * Copyright (C) 2023-2024 Hedera Hashgraph, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class ModelTests {
         assertEquals(illegalDirectSchedulerUseExpected, illegalDirectSchedulerUseDetected);
 
         // Should not throw.
-        final String diagram = model.generateWiringDiagram(List.of(), List.of());
+        final String diagram = model.generateWiringDiagram(List.of(), List.of(), List.of());
         if (printMermaidDiagram) {
             System.out.println(diagram);
         }

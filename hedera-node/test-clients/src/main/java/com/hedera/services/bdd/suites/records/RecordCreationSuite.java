@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2023 Hedera Hashgraph, LLC
+ * Copyright (C) 2020-2024 Hedera Hashgraph, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,13 +146,18 @@ public class RecordCreationSuite extends HapiSuite {
                                 .logged()));
     }
 
+    @HapiTest
     final HapiSpec submittingNodeChargedNetworkFeeForLackOfDueDiligence() {
         final String comfortingMemo = THIS_IS_OK_IT_S_FINE_IT_S_WHATEVER;
         final String disquietingMemo = "\u0000his is ok, it's fine, it's whatever.";
         final AtomicReference<FeeObject> feeObs = new AtomicReference<>();
 
-        return defaultHapiSpec("SubmittingNodeChargedNetworkFeeForLackOfDueDiligence")
+        return propertyPreservingHapiSpec("SubmittingNodeChargedNetworkFeeForLackOfDueDiligence")
+                .preserving(STAKING_FEES_NODE_REWARD_PERCENTAGE, STAKING_FEES_STAKING_REWARD_PERCENTAGE)
                 .given(
+                        overridingTwo(
+                                STAKING_FEES_NODE_REWARD_PERCENTAGE, "10",
+                                STAKING_FEES_STAKING_REWARD_PERCENTAGE, "10"),
                         cryptoTransfer(tinyBarsFromTo(GENESIS, TO_ACCOUNT, ONE_HBAR))
                                 .payingWith(GENESIS),
                         cryptoCreate(PAYER),
