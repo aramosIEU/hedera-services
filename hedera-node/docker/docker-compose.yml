@@ -23,7 +23,7 @@ services:
       - "./compose-network/node1/saved:/opt/hedera/services/data/saved"
       - "./compose-network/node1/output:/opt/hedera/services/output"
     ports:
-      - 5005:5005
+      - 5006:5005
       - 50212:50211
   node_2:
     container_name: node_2
@@ -35,5 +35,5 @@ services:
       - "./compose-network/node2/saved:/opt/hedera/services/data/saved"
       - "./compose-network/node2/output:/opt/hedera/services/output"
     ports:
-      - 5005:5005
+      - 5007:5005
       - 50213:50211
