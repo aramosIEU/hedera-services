@@ -67,7 +67,7 @@ if [[ "${CI_WAIT_FOR_PEERS}" = true && -n "${NODE_ID}" ]]; then
   echo "============================= Peers Found ============================="
 fi
 
-/usr/bin/env java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 \
+/usr/bin/env java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005 \
   -cp 'data/lib/*' -Dflag=1 -Dfile.encoding='utf-8' \
   -XX:+UnlockExperimentalVMOptions \
   -XX:+UseZGC \
