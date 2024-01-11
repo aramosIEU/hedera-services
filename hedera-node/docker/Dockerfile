@@ -69,6 +69,9 @@ RUN apt-get update && \
 ## Finishes by copying the Services JAR to the base runtime
 FROM base-runtime AS final-image
 
+# Expose port 5005 for remote debugging
+EXPOSE 5005
+
 ENV JAVA_VERSION="jdk-21.0.1+12"
 ENV JAVA_HOME="/usr/local/java/"
 ENV MALLOC_ARENA_MAX=4
