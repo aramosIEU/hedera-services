@@ -86,9 +86,11 @@ import com.swirlds.common.constructable.ConstructableRegistry;
 import com.swirlds.common.constructable.ConstructableRegistryException;
 import com.swirlds.common.context.PlatformContext;
 import com.swirlds.common.crypto.CryptographyHolder;
+import com.swirlds.common.metrics.Metrics;
 import com.swirlds.common.platform.NodeId;
 import com.swirlds.platform.listeners.PlatformStatusChangeListener;
 import com.swirlds.platform.state.PlatformState;
+import com.swirlds.platform.stats.StatConstructor;
 import com.swirlds.platform.system.InitTrigger;
 import com.swirlds.platform.system.Platform;
 import com.swirlds.platform.system.Round;
@@ -97,6 +99,7 @@ import com.swirlds.platform.system.SwirldMain;
 import com.swirlds.platform.system.SwirldState;
 import com.swirlds.platform.system.address.AddressBook;
 import com.swirlds.platform.system.events.Event;
+import com.swirlds.platform.system.status.NodeStatus;
 import com.swirlds.platform.system.status.PlatformStatus;
 import com.swirlds.platform.system.transaction.Transaction;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -308,6 +311,23 @@ public final class Hedera implements SwirldMain {
     public boolean isActive() {
         return platformStatus == PlatformStatus.ACTIVE
                 && daggerApp.grpcServerManager().isRunning();
+    }
+
+    /**
+     * Indicates this node status (UP or DOWN)
+     *
+     * @return NodeStatus
+     */
+    private NodeStatus getNodeStatus(){
+        return isActive() ? NodeStatus.UP : NodeStatus.DOWN;
+    }
+
+    private void registerNodeStatusMetric(Metrics platformMetrics){
+        platformMetrics.getOrCreate(StatConstructor.createEnumStat(
+                "NodeStatus",
+                Metrics.PLATFORM_CATEGORY,
+                NodeStatus.values(),
+                this::getNodeStatus));
     }
 
     /**
@@ -546,6 +566,8 @@ public final class Hedera implements SwirldMain {
             throw new IllegalArgumentException("Platform must be the same instance");
         }
         logger.info("Initializing Hedera app with HederaNode#{}", nodeId);
+
+        registerNodeStatusMetric(platform.getContext().getMetrics());
 
         // Check that UTF-8 is in use. Otherwise, the node will be subject to subtle bugs in string handling that will
         // lead to ISS.
