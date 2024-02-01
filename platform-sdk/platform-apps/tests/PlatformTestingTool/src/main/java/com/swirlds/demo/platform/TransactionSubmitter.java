@@ -17,14 +17,14 @@
 package com.swirlds.demo.platform;
 
 import static com.swirlds.base.units.UnitConstants.SECONDS_TO_MILLISECONDS;
-import static com.swirlds.common.metrics.Metrics.PLATFORM_CATEGORY;
+import static com.swirlds.metrics.api.Metrics.PLATFORM_CATEGORY;
 
 import com.swirlds.base.utility.Pair;
-import com.swirlds.common.metrics.Metrics;
 import com.swirlds.common.utility.throttle.MultiThrottle;
 import com.swirlds.common.utility.throttle.Throttle;
 import com.swirlds.demo.platform.actions.QuorumTriggeredAction;
 import com.swirlds.demo.platform.fs.stresstest.proto.ControlType;
+import com.swirlds.metrics.api.Metrics;
 import com.swirlds.platform.system.Platform;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -371,7 +371,7 @@ public class TransactionSubmitter {
             // it may try to catch up the lost transactions count by submitting
             // many transactions in short window and lead to a burst of transactions. This is not good for
             // platform, so we need to check the current TPS and make sure it is not too high.
-            final double tranSubTPS = (double) metrics.getValue("Debug.info", "tranSubTPS");
+            final double tranSubTPS = (double) metrics.getValue("Debug:info", "tranSubTPS");
             if (tranSubTPS > tranPerSecondGoal * ALLOWED_CATCHUP_DELTA) {
                 return false;
             }

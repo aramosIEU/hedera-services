@@ -46,16 +46,18 @@ import com.hedera.node.app.service.token.ReadableAccountStore;
 import com.hedera.node.app.service.token.api.ContractChangeSummary;
 import com.hedera.node.app.service.token.api.TokenServiceApi;
 import com.hedera.node.app.spi.workflows.HandleContext;
+import com.hedera.node.app.spi.workflows.HandleException;
+import com.hedera.node.app.spi.workflows.ResourceExhaustedException;
 import com.hedera.node.app.spi.workflows.record.ExternalizedRecordCustomizer;
 import com.hedera.node.app.spi.workflows.record.RecordListCheckPoint;
 import com.hedera.node.config.data.ContractsConfig;
 import com.hedera.node.config.data.HederaConfig;
 import com.hedera.node.config.data.LedgerConfig;
+import com.hedera.pbj.runtime.ParseException;
+import com.hedera.pbj.runtime.UncheckedParseException;
 import com.hedera.pbj.runtime.io.buffer.Bytes;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -248,7 +250,8 @@ public class HandleHederaOperations implements HederaOperations {
      * {@inheritDoc}
      */
     @Override
-    public void chargeStorageRent(final long contractNumber, final long amount, final boolean itemizeStoragePayments) {
+    public void chargeStorageRent(
+            final ContractID contractID, final long amount, final boolean itemizeStoragePayments) {
         // (FUTURE) Needed before enabling contract expiry
     }
 
@@ -257,11 +260,10 @@ public class HandleHederaOperations implements HederaOperations {
      */
     @Override
     public void updateStorageMetadata(
-            final long contractNumber, @NonNull final Bytes firstKey, final int netChangeInSlotsUsed) {
+            final ContractID contractID, @NonNull final Bytes firstKey, final int netChangeInSlotsUsed) {
         requireNonNull(firstKey);
         final var tokenServiceApi = context.serviceApi(TokenServiceApi.class);
-        final var accountId = AccountID.newBuilder().accountNum(contractNumber).build();
-        tokenServiceApi.updateStorageMetadata(accountId, firstKey, netChangeInSlotsUsed);
+        tokenServiceApi.updateStorageMetadata(contractID, firstKey, netChangeInSlotsUsed);
     }
 
     /**
@@ -274,14 +276,18 @@ public class HandleHederaOperations implements HederaOperations {
                 AccountID.newBuilder().accountNum(parentNumber).build());
         final var impliedContractCreation = synthContractCreationFromParent(
                 ContractID.newBuilder().contractNum(number).build(), requireNonNull(parent));
-        dispatchAndMarkCreation(
-                number,
-                synthAccountCreationFromHapi(
-                        ContractID.newBuilder().contractNum(number).build(), evmAddress, impliedContractCreation),
-                impliedContractCreation,
-                parent.autoRenewAccountId(),
-                evmAddress,
-                ExternalizeInitcodeOnSuccess.YES);
+        try {
+            dispatchAndMarkCreation(
+                    number,
+                    synthAccountCreationFromHapi(
+                            ContractID.newBuilder().contractNum(number).build(), evmAddress, impliedContractCreation),
+                    impliedContractCreation,
+                    parent.autoRenewAccountId(),
+                    evmAddress,
+                    ExternalizeInitcodeOnSuccess.YES);
+        } catch (final HandleException e) {
+            throw new ResourceExhaustedException(e.getStatus());
+        }
     }
 
     /**
@@ -339,10 +345,9 @@ public class HandleHederaOperations implements HederaOperations {
     }
 
     @Override
-    public long getOriginalSlotsUsed(final long contractNumber) {
+    public long getOriginalSlotsUsed(final ContractID contractID) {
         final var tokenServiceApi = context.serviceApi(TokenServiceApi.class);
-        return tokenServiceApi.originalKvUsageFor(
-                AccountID.newBuilder().accountNum(contractNumber).build());
+        return tokenServiceApi.originalKvUsageFor(contractID);
     }
 
     @Override
@@ -439,9 +444,9 @@ public class HandleHederaOperations implements HederaOperations {
                         .copyBuilder()
                         .contractCreateInstance(standardized(createdNumber, op))
                         .build());
-            } catch (IOException e) {
+            } catch (ParseException e) {
                 // Should be impossible
-                throw new UncheckedIOException(e);
+                throw new UncheckedParseException(e);
             }
         };
     }

@@ -17,6 +17,7 @@
 package com.hedera.node.app.service.token.impl;
 
 import static com.hedera.hapi.node.base.ResponseCodeEnum.FAIL_INVALID;
+import static com.hedera.hapi.node.base.TokenType.NON_FUNGIBLE_UNIQUE;
 import static com.hedera.node.app.service.token.impl.comparator.TokenComparators.ACCOUNT_AMOUNT_COMPARATOR;
 import static com.hedera.node.app.service.token.impl.handlers.staking.StakingRewardsHelper.asAccountAmounts;
 import static com.hedera.node.app.spi.workflows.HandleException.validateTrue;
@@ -181,7 +182,10 @@ public class RecordFinalizerBase {
 
             // The NFT may not have existed before, in which case we'll use a null sender account ID
             AccountID senderAccountId;
-            final var token = requireNonNull(writableTokenStore.get(nftId.tokenIdOrThrow()));
+            final var tokenId = nftId.tokenId();
+            requireNonNull(tokenId);
+            final var token = writableTokenStore.get(tokenId);
+            requireNonNull(token);
             if (persistedNft != null) {
                 // If the NFT did not have an owner before set it to the treasury account
                 senderAccountId = persistedNft.hasOwnerId() ? persistedNft.ownerId() : token.treasuryAccountIdOrThrow();
@@ -210,8 +214,9 @@ public class RecordFinalizerBase {
 
         for (final var tokenId : writableTokenStore.modifiedTokens()) {
             final var originalToken = writableTokenStore.getOriginalValue(tokenId);
-            final var modifiedToken = writableTokenStore.get(tokenId);
-            if (bothExistButTreasuryChanged(originalToken, modifiedToken)) {
+            final var modifiedToken = requireNonNull(writableTokenStore.get(tokenId));
+            if (bothExistButTreasuryChanged(originalToken, modifiedToken)
+                    && originalToken.tokenType() == NON_FUNGIBLE_UNIQUE) {
                 // When the treasury account changes, all the treasury-owned NFTs are in a sense
                 // "transferred" to the new treasury; but we cannot list all these transfers in the record,
                 // so instead we put a sentinel NFT transfer with serial number -1 to trigger mirror
