@@ -121,7 +121,7 @@ import com.swirlds.common.constructable.ClassConstructorPair;
 import com.swirlds.common.constructable.ConstructableRegistry;
 import com.swirlds.common.constructable.ConstructableRegistryException;
 import com.swirlds.common.crypto.CryptographyHolder;
-import com.swirlds.common.metrics.Metrics;
+import com.swirlds.metrics.api.Metrics;
 import com.swirlds.common.platform.NodeId;
 import com.swirlds.fcqueue.FCQueue;
 import com.swirlds.merkle.map.MerkleMap;
@@ -385,7 +385,7 @@ public final class Hedera implements SwirldMain {
                 this::getNodeStatus));
     }
 
-    /**
+    /**nnpla
      * Get the current platform status
      * @return current platform status
      */
